@@ -11,8 +11,6 @@ Whilst working on a real time visualisation project at #ozunconf in Melbourne in
 
 Given this live streaming data source, the objective of this mini project is to create a basic framework for real time API data sourcing and visualisation. API documentation varies between APIs so each API's documentation would need to be reviewed and the code updated accordingly.
 
-This will also be using the [realtime](https://github.com/ropenscilabs/realtime/) R package, which was also initially created at the #ozunconf.
-
 The [httr vignette](https://cran.r-project.org/web/packages/httr/vignettes/api-packages.html) and [Using Web APIs from R](https://www.rstudio.com/resources/videos/using-web-apis-from-r/) have been a very useful references. 
 
 
