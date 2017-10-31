@@ -1,0 +1,125 @@
+---
+title: "API Basic Framework using ANU Quantum Random Numbers Server"
+author: "Prepared by: kimnewzealand"
+date: "Date: 31 October 2017"
+output: html_notebook
+---
+
+## Synopsis
+
+Whilst working on a real time visualisation project at #ozunconf in Melbourne in October, 2017, we required real time data sources and a live random number generator was suggested. 
+
+Given this live streaming data source, the objective of this mini project is to create a basic framework for real time API data sourcing and visualisation. API documentation varies between APIs so each API's documentation would need to be reviewed and the code updated accordingly.
+
+This will also be using the [realtime](https://github.com/ropenscilabs/realtime/) R package, which was also initially created at the #ozunconf.
+
+The [httr vignette](https://cran.r-project.org/web/packages/httr/vignettes/api-packages.html) and [Using Web APIs from R](https://www.rstudio.com/resources/videos/using-web-apis-from-r/) have been a very useful references. 
+
+
+
+### 
+
+ 
+
+* * *
+
+## Setup
+
+**LOAD PACKAGES**
+
+```{r packages}
+library(devtools)
+require("httr")
+require("jsonlite")
+```
+
+### 
+
+ 
+
+* * *
+
+## Data
+
+The [ANU Quantum Random Numbers Server](https://qrng.anu.edu.au) has an API with live, truly random numbers returned in a JSON format. This API is freely accessible and does not have any API keys.
+
+
+### 
+
+ * * *
+
+## Framework 
+
+
+There are four steps in this framework:
+
+1. Request
+2. Parsing the response
+3. Data wrangling
+4. Visualisation  
+  
+1 **REQUEST**
+
+**Goal** - For the API request, our Goal is to "Get the random numbers from ANU server".
+
+**Documentation** - First we refer to the [ANU Quantum Random Numbers Server API documentation](https://qrng.anu.edu.au/API/api-demo.php) before creating our request.
+
+**API endpoint** - We can identify the API endpoint as https://qrng.anu.edu.au/API/.
+
+**Parameters** - The documentation states that the API supports 3 parameters:  
+
+- _Data type_, the data type must be 'uint8' (returns integers between 0–255), 'uint16' (returns integers between 0–65535) or 'hex16' (returns hexadecimal characters between 00–ff).  
+- _Array length_, the length of the array to return. Must be between 1–1024.  
+- _Block size_, only needed for 'hex16' data type. Sets the length of each block. Must be between 1–1024.  
+
+In this request, we do not need to not specify the headers or the format parameters (accept_json() and accept_xml() ).
+
+**Method** - In the request we will use the html verb (method) : GET. The GET function from the [httr](https://cran.r-project.org/web/packages/httr/index.html) R package to return a response as a list. 
+
+```{r APIrequest}
+# Set ANU Quantum Random Numbers Server url with the length of 30 and type as uint8 parameters
+url  <- "https://qrng.anu.edu.au/API/jsonI.php?length=30&type=uint8"
+# Construct API request with the url
+response <- httr::GET(url = url)
+# Look at the content of the list
+names(response)
+head(response)
+# Confirm that the HTTP status_code is 200 for a successful request
+response$status_code
+# Check that information is retured as JSON
+http_type(response)
+```
+
+2 **PARSING THE RESPONSE**
+
+To parse the content from JSON, we will use the httr content function and mime type fromJSON from the [jsonlite](https://cran.r-project.org/web/packages/jsonlite/index.html) R package for parsing the response from JSON to an R dataset. 
+
+```{r parse}
+# Parse content with as="text"", expecting it to default to UTF-8
+parsed <- fromJSON(httr::content(response,"text"))
+# Take a look at the parsed list
+head(parsed)
+```
+
+
+3 **DATA WRANGLING**
+
+Here we just need to extract the data as a vector from the parsed list.
+
+```{r data}
+# Create a vector for the data
+data <- parsed$data
+data
+```
+
+4 **VISUALISATION**
+
+
+Produce a very simple plot of the static data.
+
+```{r simpleplot}
+plot(data)
+```
+
+
+
