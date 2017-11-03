@@ -90,7 +90,7 @@ In this request, we will need to  specify the headers for the authentication and
 ```{r request}
 # Set url and parameters
 url  <- "https://api.transport.nsw.gov.au/v1/gtfs/vehiclepos/ferries"
-APIkey <- "lCOkAJ4MflTHZTSIVIHtY9jIilNQNEmelL1m"
+APIkey <- "fhHD8fdlKDKJFHKJEOfndkdi89ddjlkjfds9" # This is not the real key
 # Construct API request with the url
 response <- httr::GET(url = url, httr::accept_json(), httr::add_headers('Authorization'=paste("apikey", APIkey)))
 # Look at the content of the list
