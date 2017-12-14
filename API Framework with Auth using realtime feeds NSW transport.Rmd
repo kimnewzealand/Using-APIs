@@ -97,14 +97,14 @@ response <- httr::GET(url = url, httr::accept_json(), httr::add_headers('Authori
 names(response)
 # Confirm that the HTTP status_code is 200 for a successful request
 response$status_code
-# Check that information is retured as protobuf
+# Check that information is returned as protobuf
 http_type(response)
 ```
 
 
 2 **PARSING THE RESPONSE**
 
-To parse the content, we will use the gtfs_real time and gtfs_vehiclePosition function  from the [gftsway](https://github.com/SymbolixAU/gtfsway/) R package for parsing the response from RProtoBuf to an R dataset. 
+To parse the content, we will use the gtfs_real time and gtfs_vehiclePosition functions  from the [gftsway](https://github.com/SymbolixAU/gtfsway/) R package for parsing the response from RProtoBuf to an R dataset. 
 
 ```{r parse}
 # Parses the raw response from a GTFS real-time feed
@@ -118,9 +118,9 @@ ferrylist[[1]]
 
 3 **DATA WRANGLING**
 
-Create a dataframe with the nested lists using rbindlist from [data.table](https://cran.r-project.org/web/packages/data.table/index.html) R package.
+Create a dataframe with the nested lists using rbindlist function from [data.table](https://cran.r-project.org/web/packages/data.table/index.html) R package.
 
-```{r}
+```{r df}
 # Create a dataframe 
 data <- rbindlist(ferrylist, fill=TRUE)
 # Convert the unix epoch time using the anytime package
@@ -130,26 +130,27 @@ feedtime<- data[1,6]
 
 4 **VISUALISATION**
 
-
 Produce a simple [leaflet](https://rstudio.github.io/leaflet/) plot of the static data.
 
-```{r}
+```{r leaflet}
 # Create the leaflet widget 
 m <- leaflet()  
+# Source the boat icons using the awesomeIcons function
 icons <- awesomeIcons(
   icon = 'ion-android-boat',
   iconColor = 'black',
   library = 'ion'
 )
-# Then add layers - add map tiles where the default is OpenStreetMap,
+# Then add layers, add map tiles where the default tile layer is OpenStreetMap
 m  %>%  
   addTiles(urlTemplate = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png')  %>%
-      addProviderTiles(providers$ Thunderforest.Transport) %>% 
-      addAwesomeMarkers(lng = data$lon,lat=data$lat,label = data$vehicle_id,
-    labelOptions = labelOptions(noHide = F),icon = icons) %>%
-      addLegend(position = 'topright',opacity = 1, 
+      
+  addProviderTiles(providers$ Stamen.TonerLite) %>% 
+  addAwesomeMarkers(lng = data$lon,lat=data$lat,label = data$vehicle_id,
+    labelOptions = labelOptions(noHide = F),icon = icons) %>% 
+  addLegend(position = 'topright',opacity = 1, 
             colors = 'DODGERBLUE', values=icons,
-            labels = 'Sydney Ferry',title=paste("NSW Transport at ",as.character.Date(feedtime)))
+            labels = 'Sydney Ferry',title=paste("NSW Transport Ferry Locations at ",as.character.Date(feedtime)))
       
 ```
 
